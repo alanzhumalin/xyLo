@@ -14,6 +14,19 @@ class TextForm extends StatelessWidget {
           fillColor: Colors.blueGrey,
           filled: true,
           border: OutlineInputBorder(borderRadius: BorderRadius.circular(5))),
+      validator: (value) {
+        if (hinttext == 'Email') {
+          if (value == null || !value.contains('@sdu.edu.kz')) {
+            return 'Pls write your uni email';
+          }
+          return null;
+        } else {
+          if (value == null || value.length <= 7) {
+            return 'Password must be at least 8 characters';
+          }
+          return null;
+        }
+      },
     );
   }
 }
