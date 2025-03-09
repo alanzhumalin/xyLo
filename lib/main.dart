@@ -1,16 +1,33 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:xylo/core/di.dart';
+import 'package:xylo/core/simple_bloc_observer.dart';
 import 'package:xylo/core/theme.dart';
+import 'package:xylo/logic/auth/auth_bloc.dart';
 import 'package:xylo/presentation/auth/screens/auth_check.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await dotenv.load();
   await Supabase.initialize(
-    url: 'https://xyzcompany.supabase.co',
-    anonKey:
-        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR2amNycWxmdWN0eW1xdmFkbnhvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDE0MjE3MjIsImV4cCI6MjA1Njk5NzcyMn0.rpwM1sph7KRC0fX9oh3Xg26pRmA1A5nga1Yp8vZsaYI',
+    url: dotenv.env['SUPABASE_URL']!,
+    anonKey: dotenv.env['SUPABASE_ANON_KEY']!,
   );
-  runApp(const MyApp());
+  Bloc.observer = SimpleBlocObserver();
+
+  runApp(MultiBlocProvider(providers: [
+    BlocProvider(
+        create: (context) => AuthBloc(
+            getCurrentUserData: getCurrentUserData,
+            getUserData: getUserData,
+            userExistUsecase: userExistUsecase,
+            registerUsecase: registerUsecase,
+            saveUserTodb: saveUserTodb,
+            signInUsecase: signInUsecase,
+            signOutUsecase: signOutUsecase))
+  ], child: const MyApp()));
 }
 
 class MyApp extends StatelessWidget {
@@ -19,6 +36,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       theme: darkTheme,
       home: AuthCheck(),
     );

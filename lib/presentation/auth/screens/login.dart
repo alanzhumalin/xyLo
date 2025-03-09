@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:xylo/core/constants.dart';
+import 'package:xylo/presentation/auth/screens/register.dart';
 import 'package:xylo/presentation/auth/screens/widgets/custom_button.dart';
 import 'package:xylo/presentation/auth/screens/widgets/text_form.dart';
 
@@ -16,38 +17,69 @@ class _LoginState extends State<Login> {
   final _passwordController = TextEditingController();
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Padding(
-        padding: padding,
-        child: Form(
-            key: _key,
-            child: Column(
-              children: [
-                Text(
-                  'Ohh, you find us. Maaybe join to us???',
-                  style: textStyle,
-                ),
-                SizedBox(
-                  height: 10,
-                ),
-                TextForm(controller: _emailController, hinttext: 'Email'),
-                SizedBox(
-                  height: 5,
-                ),
-                TextForm(controller: _passwordController, hinttext: 'Password'),
-                SizedBox(
-                  height: 10,
-                ),
-                Row(
-                  children: [
-                    Expanded(
-                        child: CustomButton(function: () {}, title: 'Sign in')),
-                    Expanded(
-                        child: CustomButton(function: () {}, title: 'Sign up')),
-                  ],
-                )
-              ],
-            )),
+    return GestureDetector(
+      onTap: () {
+        FocusScope.of(context).unfocus();
+      },
+      child: Scaffold(
+        body: Padding(
+          padding: padding,
+          child: Form(
+              key: _key,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    'Ohh, you find us. Maybe join to us???',
+                    style: textStyle,
+                  ),
+                  SizedBox(
+                    height: 20,
+                  ),
+                  TextForm(
+                    controller: _emailController,
+                    hinttext: 'Email',
+                    validator: (value) {
+                      if (value == null || !value.contains('@sdu.edu.kz')) {
+                        return 'Pls write your uni email';
+                      }
+                      return null;
+                    },
+                  ),
+                  SizedBox(
+                    height: 8,
+                  ),
+                  TextForm(
+                    controller: _passwordController,
+                    hinttext: 'Password',
+                    validator: (value) {
+                      if (value == null || value.length < 8) {
+                        return 'Password must be at least 8 characters';
+                      }
+                      return null;
+                    },
+                  ),
+                  SizedBox(
+                    height: 12,
+                  ),
+                  CustomButton(
+                      function: () {
+                        if (_key.currentState!.validate()) {
+                          print('object');
+                        }
+                      },
+                      title: 'Sign in'),
+                  CustomButton(
+                      function: () {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => Register()));
+                      },
+                      title: 'Create new account')
+                ],
+              )),
+        ),
       ),
     );
   }
