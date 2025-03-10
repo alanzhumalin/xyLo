@@ -1,7 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:xylo/core/constants.dart';
+import 'package:xylo/logic/auth/auth_bloc.dart';
+import 'package:xylo/logic/auth/auth_event.dart';
+import 'package:xylo/logic/auth/auth_state.dart';
 import 'package:xylo/presentation/auth/screens/widgets/custom_button.dart';
+import 'package:xylo/presentation/auth/screens/widgets/loading_button.dart';
 import 'package:xylo/presentation/auth/screens/widgets/text_form.dart';
+import 'package:xylo/presentation/navigation_bar/nav_bar.dart';
 
 class Register extends StatefulWidget {
   const Register({super.key});
@@ -88,13 +94,47 @@ class _RegisterState extends State<Register> {
                       SizedBox(
                         height: 12,
                       ),
-                      CustomButton(
-                          function: () {
-                            if (_key.currentState!.validate()) {
-                              print('object');
-                            }
-                          },
-                          title: 'Create')
+                      BlocConsumer<AuthBloc, AuthState>(
+                          listener: (context, state) {
+                        if (state is AuthError) {
+                          showDialog(
+                              context: context,
+                              builder: (context) {
+                                return AlertDialog(
+                                  content: Text(state.error),
+                                  actions: [
+                                    TextButton(
+                                        onPressed: () {
+                                          Navigator.pop(context);
+                                        },
+                                        child: Text('OK'))
+                                  ],
+                                );
+                              });
+                          if (state is AuthSuccessful) {
+                            Navigator.pushAndRemoveUntil(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => NavBar()),
+                                (Route<dynamic> route) => false);
+                          }
+                        }
+                      }, builder: (context, state) {
+                        if (state is AuthLoading) {
+                          return LoadingButton();
+                        }
+                        return CustomButton(
+                            function: () {
+                              if (_key.currentState!.validate()) {
+                                context.read<AuthBloc>().add(RegisterRequested(
+                                    email: _emailController.text,
+                                    password: _passwordController.text,
+                                    major: _majorController.text,
+                                    username: _usernameController.text));
+                              }
+                            },
+                            title: 'Create');
+                      })
                     ],
                   )),
               Positioned(

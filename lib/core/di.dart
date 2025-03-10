@@ -8,6 +8,7 @@ import 'package:xylo/domain/repositories/user_repository.dart';
 import 'package:xylo/domain/use_cases/get_current_user_data.dart';
 import 'package:xylo/domain/use_cases/get_user_data.dart';
 import 'package:xylo/domain/use_cases/register_usecase.dart';
+import 'package:xylo/domain/use_cases/save_user_changes_usecase.dart';
 import 'package:xylo/domain/use_cases/save_user_todb.dart';
 import 'package:xylo/domain/use_cases/sign_in_usecase.dart';
 import 'package:xylo/domain/use_cases/sign_out_usecase.dart';
@@ -35,3 +36,6 @@ final SignInUsecase signInUsecase =
     SignInUsecase(authRepository: authRepository);
 final SignOutUsecase signOutUsecase =
     SignOutUsecase(authRepository: authRepository);
+
+final SaveUserChangesUsecase saveUserChangesUsecase =
+    SaveUserChangesUsecase(userRepository: userRepository);

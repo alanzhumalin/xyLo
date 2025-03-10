@@ -32,27 +32,55 @@ class UserService {
 
   Future<UserModel> getUserData(String id) async {
     try {
-      final userMap =
-          await supabaseClient.from('users').select().eq('id', id).single();
-      if (userMap.isEmpty) {
+      final userMap = await supabaseClient
+          .from('users')
+          .select('*')
+          .eq('id', id)
+          .maybeSingle();
+
+      if (userMap == null) {
         throw Exception('This user does not exist');
       }
 
       final user = UserModel.fromMap(userMap);
+
       return user;
     } catch (e) {
       throw Exception(e.toString());
     }
   }
 
-  Future<dynamic> saveUserToDb(
-      String email, String username, String major) async {
+  Future<void> saveUserToDb(
+      String id, String email, String username, String major) async {
     try {
-      final response = await supabaseClient
-          .from('user')
-          .insert({'email': email, 'username': username, 'major': major});
+      final user = UserModel(
+          id: id,
+          email: email,
+          major: major,
+          username: username,
+          avatar: '',
+          createdAt: DateTime.now(),
+          postCount: 0,
+          subscribers: 0);
+      final response = await supabaseClient.from('users').insert(user.toMap());
 
       return response;
+    } catch (e) {
+      throw Exception(e.toString());
+    }
+  }
+
+  Future<void> saveUserChanges(UserModel user) async {
+    try {
+      final response = await supabaseClient
+          .from('users')
+          .update(user.toMap())
+          .eq('id', user.id)
+          .select()
+          .maybeSingle();
+      if (response == null) {
+        throw Exception('Error occured while saving new user data to DB');
+      }
     } catch (e) {
       throw Exception(e.toString());
     }
@@ -62,7 +90,7 @@ class UserService {
     try {
       final user = await supabaseClient
           .from('users')
-          .select()
+          .select('*')
           .eq('username', username)
           .maybeSingle();
       return user != null;

@@ -1,6 +1,5 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:xylo/data/models/user_model.dart';
-import 'package:xylo/domain/use_cases/get_current_user_data.dart';
 import 'package:xylo/domain/use_cases/get_user_data.dart';
 import 'package:xylo/domain/use_cases/register_usecase.dart';
 import 'package:xylo/domain/use_cases/save_user_todb.dart';
@@ -15,12 +14,10 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   final SignOutUsecase signOutUsecase;
   final SaveUserTodb saveUserTodb;
   final RegisterUsecase registerUsecase;
-  final GetCurrentUserData getCurrentUserData;
   final GetUserData getUserData;
   final UserExistUsecase userExistUsecase;
   AuthBloc(
-      {required this.getCurrentUserData,
-      required this.getUserData,
+      {required this.getUserData,
       required this.userExistUsecase,
       required this.registerUsecase,
       required this.saveUserTodb,
@@ -32,14 +29,12 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         emit(AuthLoading());
 
         final response = await signInUsecase(event.email, event.password);
-
         if (response.user == null) {
           emit(AuthError(error: 'This user does not exist'));
           return;
         }
 
         final user = await getUserData(response.user!.id);
-
         emit(AuthSuccessful(userModel: user));
       } catch (e) {
         emit(AuthError(error: e.toString()));
@@ -59,19 +54,20 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
           emit(AuthError(error: 'Error occured by registering a new user'));
           return;
         }
-        final responseDB =
-            await saveUserTodb(event.email, event.username, event.major);
-        if (responseDB == null) {
-          emit(AuthError(
-              error: 'Error occured while inserting new user data to DB'));
-          return;
-        }
+
+        await saveUserTodb(
+            responseAuth.user!.id, event.email, event.username, event.major);
+
         String id = responseAuth.user!.id;
         emit(AuthSuccessful(
             userModel: UserModel(
                 id: id,
                 email: event.email,
                 major: event.major,
+                postCount: 0,
+                subscribers: 0,
+                createdAt: DateTime.now(),
+                avatar: '',
                 username: event.username)));
       } catch (e) {
         emit(AuthError(error: e.toString()));
@@ -84,6 +80,15 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       } catch (e) {
         emit(AuthError(error: e.toString()));
       }
+    });
+
+    on<AppStarted>((event, emit) async {
+      if (event.userModel != null) {
+        emit(AuthSuccessful(userModel: event.userModel!));
+
+        return;
+      }
+      emit(AuthInitial());
     });
   }
 }

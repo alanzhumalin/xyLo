@@ -1,3 +1,4 @@
+import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:xylo/data/data_sources/user_service.dart';
 import 'package:xylo/data/models/user_model.dart';
 import 'package:xylo/domain/repositories/user_repository.dart';
@@ -7,8 +8,8 @@ class UserRepositoryImpl implements UserRepository {
   UserRepositoryImpl({required this.userService});
   @override
   Future<dynamic> saveUserToDb(
-      String email, String username, String major) async {
-    return await userService.saveUserToDb(email, username, major);
+      String id, String email, String username, String major) async {
+    return await userService.saveUserToDb(id, email, username, major);
   }
 
   @override
@@ -24,5 +25,10 @@ class UserRepositoryImpl implements UserRepository {
   @override
   Future<bool> userExist(String username) async {
     return await userService.userExist(username);
+  }
+
+  @override
+  Future<void> saveUserChanges(UserModel user) async {
+    await userService.saveUserChanges(user);
   }
 }

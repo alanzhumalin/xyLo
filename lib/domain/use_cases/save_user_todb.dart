@@ -4,7 +4,8 @@ class SaveUserTodb {
   final UserRepository userRepository;
   SaveUserTodb({required this.userRepository});
 
-  Future<dynamic> call(String email, String username, String major) async {
-    return await userRepository.saveUserToDb(email, username, major);
+  Future<dynamic> call(
+      String id, String email, String username, String major) async {
+    return await userRepository.saveUserToDb(id, email, username, major);
   }
 }

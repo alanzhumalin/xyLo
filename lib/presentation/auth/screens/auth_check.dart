@@ -3,7 +3,7 @@ import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:xylo/core/constants.dart';
 import 'package:xylo/presentation/auth/screens/login.dart';
-import 'package:xylo/presentation/post/screens/lenta.dart';
+import 'package:xylo/presentation/navigation_bar/nav_bar.dart';
 
 class AuthCheck extends StatefulWidget {
   const AuthCheck({super.key});
@@ -17,7 +17,7 @@ class _AuthCheckState extends State<AuthCheck> {
 
   Future<void> authCheck() async {
     final session = supabaseClient.auth.currentSession;
-    Widget nextScreen = session != null ? Lenta() : Login();
+    Widget nextScreen = session != null ? NavBar() : Login();
 
     await Future.delayed(const Duration(seconds: 1));
 
