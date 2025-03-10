@@ -1,56 +1,61 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:loading_animation_widget/loading_animation_widget.dart';
-import 'package:xylo/core/constants.dart';
-import 'package:xylo/logic/auth/auth_bloc.dart';
-import 'package:xylo/logic/auth/auth_event.dart';
-import 'package:xylo/logic/auth/auth_state.dart';
-import 'package:xylo/presentation/auth/screens/login.dart';
+import 'package:xylo/presentation/post/screens/clubs.dart';
+import 'package:xylo/presentation/post/screens/events.dart';
+import 'package:xylo/presentation/post/screens/recommendation.dart';
 
-class Lenta extends StatelessWidget {
+class Lenta extends StatefulWidget {
   const Lenta({super.key});
+
+  @override
+  State<Lenta> createState() => _LentaState();
+}
+
+class _LentaState extends State<Lenta> with SingleTickerProviderStateMixin {
+  late TabController _tabController;
+
+  @override
+  void initState() {
+    super.initState();
+    _tabController = TabController(length: 3, vsync: this);
+  }
+
+  @override
+  void dispose() {
+    _tabController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Posts'),
-        actions: [
-          BlocConsumer<AuthBloc, AuthState>(listener: (context, state) {
-            if (state is AuthInitial) {
-              Navigator.pushAndRemoveUntil(
-                  context,
-                  MaterialPageRoute(builder: (context) => Login()),
-                  (Route<dynamic> route) => false);
-            }
-          }, builder: (context, state) {
-            return IconButton(
-                onPressed: () {
-                  context.read<AuthBloc>().add(LogOut());
-                },
-                icon: Icon(Icons.exit_to_app));
-          })
-        ],
+        title: const Text(
+          'Home',
+          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+        ),
+        centerTitle: true,
+        forceMaterialTransparency: true,
+        bottom: TabBar(
+          overlayColor: WidgetStateColor.transparent,
+          controller: _tabController,
+          indicatorColor: Colors.white,
+          padding: EdgeInsets.zero,
+          labelPadding: EdgeInsets.zero,
+          labelColor: Colors.white,
+          unselectedLabelColor: Colors.grey,
+          tabs: const [
+            Tab(text: "Recommendation"),
+            Tab(text: "Clubs"),
+            Tab(text: "Events"),
+          ],
+        ),
       ),
-      body: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Center(
-            child: BlocBuilder<AuthBloc, AuthState>(builder: (context, state) {
-              if (state is AuthError) {
-                return Center(child: Text('Ошибка'));
-              }
-              if (state is AuthLoading) {
-                return Center(child: loading);
-              }
-              if (state is AuthSuccessful) {
-                return Center(child: Text(state.userModel.username));
-              }
-              return Center(
-                child: Text('Error'),
-              );
-            }),
-          )
+      body: TabBarView(
+        controller: _tabController,
+        children: const [
+          Recommendation(),
+          Clubs(),
+          Events(),
         ],
       ),
     );

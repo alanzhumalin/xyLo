@@ -130,7 +130,7 @@ class _RegisterState extends State<Register> {
                                     email: _emailController.text,
                                     password: _passwordController.text,
                                     major: _majorController.text,
-                                    username: _usernameController.text));
+                                    username: _usernameController.text.trim()));
                               }
                             },
                             title: 'Create');

@@ -1,4 +1,9 @@
+import 'dart:io';
+
+import 'package:flutter_image_compress/flutter_image_compress.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:xylo/data/models/post_model.dart';
 import 'package:xylo/data/models/user_model.dart';
 
 class UserService {
@@ -72,17 +77,41 @@ class UserService {
 
   Future<void> saveUserChanges(UserModel user) async {
     try {
-      final response = await supabaseClient
-          .from('users')
-          .update(user.toMap())
-          .eq('id', user.id)
-          .select()
-          .maybeSingle();
-      if (response == null) {
-        throw Exception('Error occured while saving new user data to DB');
-      }
+      await supabaseClient.from('users').update(user.toMap()).eq('id', user.id);
     } catch (e) {
-      throw Exception(e.toString());
+      throw Exception(e.toString() + 'fdsfdsfdsfsd');
+    }
+  }
+
+  Future<String> saveUserAvatar(File file, String id) async {
+    try {
+      final dir = await getTemporaryDirectory();
+      final webpPath = '${dir.path}/$id.webp';
+
+      final compressedBytes = await FlutterImageCompress.compressWithFile(
+        file.absolute.path,
+        format: CompressFormat.webp,
+        quality: 40,
+      );
+
+      final webpFile = File(webpPath);
+      await webpFile.writeAsBytes(compressedBytes!);
+
+      final storage = Supabase.instance.client.storage.from('user_avatars');
+      final filePath = '$id.webp';
+
+      final existingFiles = await storage.list();
+      final fileExists = existingFiles.any((file) => file.name == filePath);
+
+      if (fileExists) {
+        await storage.remove([filePath]);
+      }
+
+      final response = await storage.upload(filePath, webpFile);
+
+      return response;
+    } catch (e) {
+      throw Exception("Avatar upload failed: ${e.toString()}");
     }
   }
 
@@ -94,6 +123,38 @@ class UserService {
           .eq('username', username)
           .maybeSingle();
       return user != null;
+    } catch (e) {
+      throw Exception(e.toString());
+    }
+  }
+
+  Future<List<PostModel>?> getUserPosts(String id) async {
+    try {
+      final posts = await supabaseClient
+          .from('posts')
+          .select()
+          .eq('user_id', id)
+          .order('created_at', ascending: false);
+
+      if (posts.isEmpty) {
+        return null;
+      }
+
+      final userPosts = posts.map((post) => PostModel.fromMap(post)).toList();
+      return userPosts;
+    } catch (e) {
+      throw Exception(e.toString());
+    }
+  }
+
+  Future<void> postCountUpdate(UserModel user) async {
+    try {
+      final newCount = user.postCount + 1;
+      final newData = user.copyWith(postCount: newCount);
+      await supabaseClient
+          .from('users')
+          .update(newData.toMap())
+          .eq('id', user.id);
     } catch (e) {
       throw Exception(e.toString());
     }

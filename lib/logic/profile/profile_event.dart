@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:xylo/data/models/user_model.dart';
 
 sealed class ProfileEvent {}
@@ -9,5 +11,6 @@ class LoadUserProfile extends ProfileEvent {
 
 class ChangeProfileDetails extends ProfileEvent {
   UserModel userModel;
-  ChangeProfileDetails({required this.userModel});
+  File? file;
+  ChangeProfileDetails({required this.userModel, required this.file});
 }

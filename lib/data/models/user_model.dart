@@ -1,3 +1,4 @@
+// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'dart:convert';
 
 class UserModel {
@@ -43,6 +44,26 @@ class UserModel {
         avatar: map['avatar'] as String,
         postCount: map['post_count'] as int,
         subscribers: map['subscribers'] as int);
+  }
+  UserModel copyWith({
+    String? id,
+    String? email,
+    String? major,
+    String? username,
+    String? avatar,
+    int? postCount,
+    int? subscribers,
+    DateTime? createdAt,
+  }) {
+    return UserModel(
+        id: id ?? this.id,
+        email: email ?? this.email,
+        major: major ?? this.major,
+        username: username ?? this.username,
+        avatar: avatar ?? this.avatar,
+        createdAt: createdAt ?? this.createdAt,
+        postCount: postCount ?? this.postCount,
+        subscribers: subscribers ?? this.subscribers);
   }
 
   String toJson() => json.encode(toMap());

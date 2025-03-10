@@ -8,6 +8,7 @@ import 'package:xylo/data/models/user_model.dart';
 import 'package:xylo/domain/use_cases/get_current_user_data.dart';
 import 'package:xylo/logic/auth/auth_bloc.dart';
 import 'package:xylo/logic/auth/auth_event.dart';
+import 'package:xylo/logic/create_post/create_post_bloc.dart';
 import 'package:xylo/logic/nav_bar/navbar_bloc.dart';
 import 'package:xylo/logic/profile/profile_bloc.dart';
 import 'package:xylo/presentation/my_app.dart';
@@ -40,7 +41,15 @@ void main() async {
     BlocProvider(create: (context) => NavbarBloc()),
     BlocProvider(
         create: (context) => ProfileBloc(
+            userExistUsecase: userExistUsecase,
+            saveUserAvatar: saveUserAvatar,
             getUserData: getUserData,
-            saveUserChangesUsecase: saveUserChangesUsecase))
+            saveUserChangesUsecase: saveUserChangesUsecase,
+            getUserPosts: getUserPosts)),
+    BlocProvider(
+        create: (context) => CreatePostBloc(
+            postCountUpdate: postCountUpdate,
+            saveImageTodb: saveImageTodb,
+            savePostTodb: savePostTodb)),
   ], child: const MyApp()));
 }

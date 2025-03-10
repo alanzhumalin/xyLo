@@ -1,6 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:xylo/core/constants.dart';
 import 'package:xylo/logic/auth/auth_bloc.dart';
 import 'package:xylo/logic/auth/auth_event.dart';
@@ -10,6 +11,7 @@ import 'package:xylo/logic/profile/profile_event.dart';
 import 'package:xylo/logic/profile/profile_state.dart';
 import 'package:xylo/presentation/auth/screens/login.dart';
 import 'package:xylo/presentation/profile/screens/change_profile.dart';
+import 'package:xylo/presentation/profile/widgets/post_widget.dart';
 
 class MyProfile extends StatelessWidget {
   const MyProfile({super.key});
@@ -48,10 +50,16 @@ class MyProfile extends StatelessWidget {
                     )),
                 ListTile(
                   onTap: () {
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => ChangeProfile()));
+                    final state = context.read<ProfileBloc>().state;
+                    if (state is ProfileLoaded) {
+                      Navigator.pop(context);
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => ChangeProfile(
+                                    user: state.user,
+                                  )));
+                    }
                   },
                   trailing: Icon(Icons.edit),
                   title: Text(
@@ -126,9 +134,8 @@ class MyProfile extends StatelessWidget {
                                 Row(
                                   children: [
                                     CircleAvatar(
-                                      backgroundImage:
-                                          CachedNetworkImageProvider(
-                                              user.avatar),
+                                      backgroundImage: CachedNetworkImageProvider(
+                                          '${dotenv.env['AVATAR_URL']!}${user.avatar}'),
                                       radius: 50,
                                     ),
                                     const SizedBox(width: 20),
@@ -187,74 +194,27 @@ class MyProfile extends StatelessWidget {
                           ],
                         ),
                         const SizedBox(height: 20),
-                        Card(
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(15),
-                          ),
-                          elevation: 4,
-                          child: Padding(
-                            padding: const EdgeInsets.all(16.0),
-                            child: Container(
-                              child: Column(
-                                children: [
-                                  ClipRRect(
-                                    borderRadius: BorderRadius.circular(5),
-                                    child: CachedNetworkImage(
-                                        imageUrl:
-                                            'https://i.redd.it/the-legendary-bmw-m3-gtr-nfsmw-at-bmw-welt-munich-v0-zss37de6ne4e1.jpg?width=5712&format=pjpg&auto=webp&s=d530d45a0be60e8aff1635ed24dffa744c9111c7'),
-                                  ),
-                                  SizedBox(
-                                    height: 10,
-                                  ),
-                                  Text(
-                                      'Today i saw my dream from my child. As you can it is BMW m3 gtr from NFS MW 2005. It was really gorgeous. Amazing'),
-                                  SizedBox(
-                                    height: 10,
-                                  ),
-                                  Row(
-                                    children: [
-                                      Row(
-                                        children: [
-                                          GestureDetector(
-                                              onTap: () {
-                                                print('object');
-                                              },
-                                              child: Icon(
-                                                Icons.favorite_border_rounded,
-                                                size: 20,
-                                              )),
-                                          SizedBox(
-                                            width: 3,
-                                          ),
-                                          Text('14')
-                                        ],
-                                      ),
-                                      SizedBox(
-                                        width: 15,
-                                      ),
-                                      Row(
-                                        children: [
-                                          GestureDetector(
-                                              onTap: () {
-                                                print('object');
-                                              },
-                                              child: Icon(
-                                                Icons.comment,
-                                                size: 20,
-                                              )),
-                                          SizedBox(
-                                            width: 5,
-                                          ),
-                                          Text('3')
-                                        ],
-                                      )
-                                    ],
-                                  )
-                                ],
-                              ),
-                            ),
-                          ),
-                        )
+                        BlocBuilder<ProfileBloc, ProfileState>(
+                            builder: (context, state) {
+                          if (state is ProfileLoaded) {
+                            final posts = state.postModel;
+
+                            if (posts == null) {
+                              return Text('No posts');
+                            }
+
+                            return ListView.builder(
+                                physics: NeverScrollableScrollPhysics(),
+                                shrinkWrap: true,
+                                itemCount: posts.length,
+                                itemBuilder: (context, index) {
+                                  final post = posts[index];
+
+                                  return PostWidget(post: post);
+                                });
+                          }
+                          return loading;
+                        })
                       ],
                     ),
                   ],

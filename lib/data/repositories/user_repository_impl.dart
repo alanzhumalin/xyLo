@@ -1,5 +1,7 @@
-import 'package:supabase_flutter/supabase_flutter.dart';
+import 'dart:io';
+
 import 'package:xylo/data/data_sources/user_service.dart';
+import 'package:xylo/data/models/post_model.dart';
 import 'package:xylo/data/models/user_model.dart';
 import 'package:xylo/domain/repositories/user_repository.dart';
 
@@ -30,5 +32,20 @@ class UserRepositoryImpl implements UserRepository {
   @override
   Future<void> saveUserChanges(UserModel user) async {
     await userService.saveUserChanges(user);
+  }
+
+  @override
+  Future<String> saveUserAvatar(File file, String id) async {
+    return await userService.saveUserAvatar(file, id);
+  }
+
+  @override
+  Future<List<PostModel>?> getUserPosts(String id) async {
+    return await userService.getUserPosts(id);
+  }
+
+  @override
+  Future<void> postCountUpdate(UserModel user) async {
+    await userService.postCountUpdate(user);
   }
 }

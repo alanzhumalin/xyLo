@@ -1,3 +1,6 @@
+import 'dart:io';
+
+import 'package:xylo/data/models/post_model.dart';
 import 'package:xylo/data/models/user_model.dart';
 
 abstract class UserRepository {
@@ -7,4 +10,7 @@ abstract class UserRepository {
   Future<bool> userExist(String username);
   Future<UserModel> getUserData(String id);
   Future<void> saveUserChanges(UserModel user);
+  Future<String> saveUserAvatar(File file, String id);
+  Future<List<PostModel>?> getUserPosts(String id);
+  Future<void> postCountUpdate(UserModel user);
 }
