@@ -76,6 +76,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     on<LogOut>((event, emit) async {
       try {
         await signOutUsecase();
+
         emit(AuthInitial());
       } catch (e) {
         emit(AuthError(error: e.toString()));

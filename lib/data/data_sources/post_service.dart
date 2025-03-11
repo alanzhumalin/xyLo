@@ -43,15 +43,20 @@ class PostService {
     }
   }
 
-  Future<List<PostModel>?> fetchAllPosts() async {
+  Future<List<PostModel>?> fetchAllPosts(String userId) async {
     try {
-      final postsList = await supabaseClient.from('posts').select();
+      final response = await supabaseClient
+          .rpc('fetch_posts_with_counts', params: {'user_uuid': userId});
+
+      final postsList = response as List<dynamic>;
 
       if (postsList.isEmpty) {
         return null;
       }
 
-      final posts = postsList.map((post) => PostModel.fromMap(post)).toList();
+      final List<PostModel> posts = postsList
+          .map((post) => PostModel.fromMap(post as Map<String, dynamic>))
+          .toList();
 
       return posts;
     } catch (e) {

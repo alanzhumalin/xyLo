@@ -28,10 +28,12 @@ class CreatePostBloc extends Bloc<CreatePostEvent, CreatePostState> {
         }
         final post = PostModel(
             createdAt: DateTime.now(),
-            usedId: event.userId,
+            userId: event.userId,
             id: postId,
             title: event.title,
             isAnonymous: event.isAnonymous,
+            userName: event.user.username,
+            userAvatar: event.user.avatar,
             image: url ?? '');
         await savePostTodb(post);
         await postCountUpdate(event.user);

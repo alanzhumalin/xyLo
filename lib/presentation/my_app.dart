@@ -4,6 +4,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:xylo/core/theme.dart';
 import 'package:xylo/logic/auth/auth_bloc.dart';
 import 'package:xylo/logic/auth/auth_state.dart';
+import 'package:xylo/logic/post/post_bloc.dart';
+import 'package:xylo/logic/post/post_event.dart';
 import 'package:xylo/logic/profile/profile_bloc.dart';
 import 'package:xylo/logic/profile/profile_event.dart';
 import 'package:xylo/presentation/auth/screens/auth_check.dart';
@@ -19,6 +21,9 @@ class MyApp extends StatelessWidget {
           context
               .read<ProfileBloc>()
               .add(LoadUserProfile(id: state.userModel.id));
+          context
+              .read<PostBloc>()
+              .add(PostLoadRequest(userId: state.userModel.id));
         }
       },
       child: MaterialApp(

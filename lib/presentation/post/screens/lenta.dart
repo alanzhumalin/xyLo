@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:xylo/core/constants.dart';
 import 'package:xylo/presentation/post/screens/clubs.dart';
 import 'package:xylo/presentation/post/screens/events.dart';
 import 'package:xylo/presentation/post/screens/recommendation.dart';
@@ -50,13 +51,16 @@ class _LentaState extends State<Lenta> with SingleTickerProviderStateMixin {
           ],
         ),
       ),
-      body: TabBarView(
-        controller: _tabController,
-        children: const [
-          Recommendation(),
-          Clubs(),
-          Events(),
-        ],
+      body: Padding(
+        padding: padding,
+        child: TabBarView(
+          controller: _tabController,
+          children: const [
+            Recommendation(),
+            Clubs(),
+            Events(),
+          ],
+        ),
       ),
     );
   }

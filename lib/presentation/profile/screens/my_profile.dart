@@ -3,9 +3,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:xylo/core/constants.dart';
+import 'package:xylo/data/models/post_model.dart';
 import 'package:xylo/logic/auth/auth_bloc.dart';
 import 'package:xylo/logic/auth/auth_event.dart';
 import 'package:xylo/logic/auth/auth_state.dart';
+import 'package:xylo/logic/post/post_bloc.dart';
+import 'package:xylo/logic/post/post_state.dart';
 import 'package:xylo/logic/profile/profile_bloc.dart';
 import 'package:xylo/logic/profile/profile_event.dart';
 import 'package:xylo/logic/profile/profile_state.dart';
@@ -194,27 +197,35 @@ class MyProfile extends StatelessWidget {
                           ],
                         ),
                         const SizedBox(height: 20),
-                        BlocBuilder<ProfileBloc, ProfileState>(
-                            builder: (context, state) {
-                          if (state is ProfileLoaded) {
-                            final posts = state.postModel;
+                        BlocBuilder<PostBloc, PostState>(
+                          builder: (context, state) {
+                            if (state is PostLoaded) {
+                              final authState = context.read<AuthBloc>().state;
+                              List<PostModel>? userPosts;
+                              if (authState is AuthSuccessful) {
+                                userPosts = state.posts
+                                    .where((post) =>
+                                        post.userId == authState.userModel.id)
+                                    .toList();
+                              }
 
-                            if (posts == null) {
-                              return Text('No posts');
-                            }
+                              if (userPosts == null || userPosts.isEmpty) {
+                                return Center(child: Text('No posts'));
+                              }
 
-                            return ListView.builder(
+                              return ListView.builder(
                                 physics: NeverScrollableScrollPhysics(),
                                 shrinkWrap: true,
-                                itemCount: posts.length,
+                                itemCount: userPosts.length,
                                 itemBuilder: (context, index) {
-                                  final post = posts[index];
-
+                                  final post = userPosts![index];
                                   return PostWidget(post: post);
-                                });
-                          }
-                          return loading;
-                        })
+                                },
+                              );
+                            }
+                            return Center(child: loading);
+                          },
+                        )
                       ],
                     ),
                   ],

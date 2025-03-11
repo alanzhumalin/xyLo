@@ -1,5 +1,4 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:xylo/data/models/post_model.dart';
 import 'package:xylo/domain/use_cases/get_user_data.dart';
 import 'package:xylo/domain/use_cases/get_user_posts.dart';
 import 'package:xylo/domain/use_cases/save_user_avatar.dart';
@@ -26,8 +25,8 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
         try {
           emit(ProfileLoading());
           final user = await getUserData(event.id);
-          final posts = await getUserPosts(event.id);
-          emit(ProfileLoaded(user: user, postModel: posts));
+
+          emit(ProfileLoaded(user: user));
         } catch (e) {
           emit(ProfileError(message: e.toString()));
         }
@@ -36,11 +35,6 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
     on<ChangeProfileDetails>(
       (event, emit) async {
         try {
-          final currentState = state;
-          List<PostModel>? posts;
-          if (currentState is ProfileLoaded) {
-            posts = currentState.postModel;
-          }
           emit(ProfileLoading());
 
           final check = await userExistUsecase.call(event.userModel.username);
@@ -58,7 +52,7 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
 
           await saveUserChangesUsecase(user);
 
-          emit(ProfileLoaded(user: user, postModel: posts));
+          emit(ProfileLoaded(user: user));
         } catch (e) {
           emit(ProfileError(message: e.toString()));
         }

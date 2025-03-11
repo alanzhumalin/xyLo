@@ -10,6 +10,7 @@ import 'package:xylo/logic/auth/auth_bloc.dart';
 import 'package:xylo/logic/auth/auth_event.dart';
 import 'package:xylo/logic/create_post/create_post_bloc.dart';
 import 'package:xylo/logic/nav_bar/navbar_bloc.dart';
+import 'package:xylo/logic/post/post_bloc.dart';
 import 'package:xylo/logic/profile/profile_bloc.dart';
 import 'package:xylo/presentation/my_app.dart';
 
@@ -51,5 +52,11 @@ void main() async {
             postCountUpdate: postCountUpdate,
             saveImageTodb: saveImageTodb,
             savePostTodb: savePostTodb)),
+    BlocProvider(
+        create: (context) => PostBloc(
+              addLikePost: addLikePost,
+              removeLikePost: removeLikePost,
+              fetchAllPosts: fetchAllPosts,
+            )),
   ], child: const MyApp()));
 }

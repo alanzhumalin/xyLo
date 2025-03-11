@@ -1,7 +1,12 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:xylo/data/models/post_model.dart';
+import 'package:xylo/logic/auth/auth_bloc.dart';
+import 'package:xylo/logic/auth/auth_state.dart';
+import 'package:xylo/logic/post/post_bloc.dart';
+import 'package:xylo/logic/post/post_event.dart';
 
 class PostWidget extends StatelessWidget {
   const PostWidget({super.key, required this.post});
@@ -22,10 +27,13 @@ class PostWidget extends StatelessWidget {
             Center(
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(5),
-                child: CachedNetworkImage(
-                    fadeInDuration: Duration.zero,
-                    fadeOutDuration: Duration.zero,
-                    imageUrl: dotenv.env['POST_URL']! + post.image),
+                child: Container(
+                  child: CachedNetworkImage(
+                      fit: BoxFit.contain,
+                      fadeInDuration: Duration.zero,
+                      fadeOutDuration: Duration.zero,
+                      imageUrl: dotenv.env['POST_URL']! + post.image),
+                ),
               ),
             ),
             SizedBox(
@@ -43,38 +51,42 @@ class PostWidget extends StatelessWidget {
                 Row(
                   children: [
                     GestureDetector(
-                        onTap: () {},
-                        child: Icon(
-                          Icons.favorite_border_rounded,
-                          size: 20,
-                        )),
-                    SizedBox(
-                      width: 3,
+                      onTap: () {
+                        final state = context.read<AuthBloc>().state;
+                        if (state is AuthSuccessful) {
+                          context.read<PostBloc>().add(ToggleLike(
+                              post: post, userId: state.userModel.id));
+                        }
+                      },
+                      child: Icon(
+                        post.isLiked!
+                            ? Icons.favorite
+                            : Icons.favorite_border_rounded,
+                        size: 20,
+                        color: Colors.red,
+                      ),
                     ),
-                    Text('14')
+                    const SizedBox(width: 3),
+                    Text(post.likeCount.toString()),
                   ],
                 ),
-                SizedBox(
-                  width: 15,
-                ),
+                const SizedBox(width: 15),
                 Row(
                   children: [
                     GestureDetector(
-                        onTap: () {
-                          print('object');
-                        },
-                        child: Icon(
-                          Icons.comment,
-                          size: 20,
-                        )),
-                    SizedBox(
-                      width: 5,
+                      onTap: () {},
+                      child: const Icon(
+                        Icons.comment,
+                        size: 20,
+                        color: Colors.blue,
+                      ),
                     ),
-                    Text('3')
+                    const SizedBox(width: 5),
+                    Text(post.commentCount.toString()),
                   ],
-                )
+                ),
               ],
-            )
+            ),
           ],
         ),
       ),

@@ -19,7 +19,7 @@ class PostRepositoryImpl extends PostRepository {
   }
 
   @override
-  Future<List<PostModel>?> fetchAllPosts() async {
-    return await postService.fetchAllPosts();
+  Future<List<PostModel>?> fetchAllPosts(String userId) async {
+    return await postService.fetchAllPosts(userId);
   }
 }

@@ -10,11 +10,14 @@ import 'package:xylo/logic/auth/auth_state.dart';
 import 'package:xylo/logic/create_post/create_post_bloc.dart';
 import 'package:xylo/logic/create_post/create_post_event.dart';
 import 'package:xylo/logic/create_post/create_post_state.dart';
+import 'package:xylo/logic/post/post_bloc.dart';
 import 'package:xylo/logic/profile/profile_bloc.dart';
 import 'package:xylo/logic/profile/profile_event.dart';
 import 'package:xylo/logic/profile/profile_state.dart';
 import 'package:xylo/presentation/auth/screens/widgets/custom_button.dart';
 import 'package:xylo/presentation/auth/screens/widgets/loading_button.dart';
+
+import '../../../logic/post/post_event.dart';
 
 class CreatePost extends StatefulWidget {
   const CreatePost({super.key});
@@ -204,6 +207,11 @@ class _CreatePostState extends State<CreatePost> {
                       context
                           .read<ProfileBloc>()
                           .add(LoadUserProfile(id: state.id));
+                      final authState = context.read<AuthBloc>().state;
+                      if (authState is AuthSuccessful) {
+                        context.read<PostBloc>().add(
+                            PostLoadRequest(userId: authState.userModel.id));
+                      }
                     }
                   }
                 }, builder: (context, state) {

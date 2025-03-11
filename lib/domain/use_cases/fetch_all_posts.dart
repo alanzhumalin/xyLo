@@ -5,7 +5,7 @@ class FetchAllPosts {
   final PostRepository postRepository;
   FetchAllPosts({required this.postRepository});
 
-  Future<List<PostModel>?> fetchAllPosts() async {
-    return await postRepository.fetchAllPosts();
+  Future<List<PostModel>?> call(String userId) async {
+    return await postRepository.fetchAllPosts(userId);
   }
 }
