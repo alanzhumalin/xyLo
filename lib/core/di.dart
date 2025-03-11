@@ -1,23 +1,28 @@
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:xylo/data/data_sources/auth_service.dart';
+import 'package:xylo/data/data_sources/comments_service.dart';
 import 'package:xylo/data/data_sources/like_service.dart';
 import 'package:xylo/data/data_sources/post_service.dart';
 import 'package:xylo/data/data_sources/user_service.dart';
 import 'package:xylo/data/repositories/auth_repository_impl.dart';
+import 'package:xylo/data/repositories/comments_repository_impl.dart';
 import 'package:xylo/data/repositories/like_repository_impl.dart';
 import 'package:xylo/data/repositories/post_repository_impl.dart';
 import 'package:xylo/data/repositories/user_repository_impl.dart';
 import 'package:xylo/domain/repositories/auth_repository.dart';
+import 'package:xylo/domain/repositories/comments_repository.dart';
 import 'package:xylo/domain/repositories/like_repository.dart';
 import 'package:xylo/domain/repositories/post_repository.dart';
 import 'package:xylo/domain/repositories/user_repository.dart';
+import 'package:xylo/domain/use_cases/add_commentary.dart';
 import 'package:xylo/domain/use_cases/add_like_post.dart';
 import 'package:xylo/domain/use_cases/fetch_all_posts.dart';
+import 'package:xylo/domain/use_cases/get_comments.dart';
 import 'package:xylo/domain/use_cases/get_current_user_data.dart';
 import 'package:xylo/domain/use_cases/get_user_data.dart';
-import 'package:xylo/domain/use_cases/get_user_posts.dart';
 import 'package:xylo/domain/use_cases/post_count_update.dart';
 import 'package:xylo/domain/use_cases/register_usecase.dart';
+import 'package:xylo/domain/use_cases/remove_commentary.dart';
 import 'package:xylo/domain/use_cases/remove_like_post.dart';
 import 'package:xylo/domain/use_cases/save_image_todb.dart';
 import 'package:xylo/domain/use_cases/save_post_todb.dart';
@@ -64,8 +69,6 @@ final SaveImageTodb saveImageTodb =
 
 final SavePostTodb savePostTodb = SavePostTodb(postRepository: postRepository);
 
-final GetUserPosts getUserPosts = GetUserPosts(userRepository: userRepository);
-
 final PostCountUpdate postCountUpdate =
     PostCountUpdate(userRepository: userRepository);
 
@@ -79,3 +82,15 @@ final AddLikePost addLikePost = AddLikePost(likeRepository: likeRepository);
 
 final RemoveLikePost removeLikePost =
     RemoveLikePost(likeRepository: likeRepository);
+final CommentsService commentsService =
+    CommentsService(supabaseClient: supabaseClient);
+
+final CommentsRepository commentsRepository =
+    CommentsRepositoryImpl(commentsService: commentsService);
+final RemoveCommentary removeCommentary =
+    RemoveCommentary(commentsRepository: commentsRepository);
+final AddCommentary addCommentary =
+    AddCommentary(commentsRepository: commentsRepository);
+
+final GetCommentaries getComments =
+    GetCommentaries(commentsRepository: commentsRepository);

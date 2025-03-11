@@ -7,7 +7,7 @@ class CommentsService {
   final SupabaseClient supabaseClient;
   CommentsService({required this.supabaseClient});
 
-  Future<void> addCommentary(PostModel post, String text) async {
+  Future<void> addCommentary(String userId, PostModel post, String text) async {
     try {
       final uuid = Uuid();
       final commentId = uuid.v4();
@@ -24,23 +24,32 @@ class CommentsService {
     }
   }
 
-  Future<void> removeCommentary(CommentsModel comment) async {
+  Future<void> removeCommentary(PostModel post, String userId) async {
     try {
-      await supabaseClient.from('comments').delete().eq('id', comment.id);
+      await supabaseClient
+          .from('comments')
+          .delete()
+          .eq('user_id', userId)
+          .eq('post_id', post.id);
     } catch (e) {
       throw Exception(e.toString());
     }
   }
 
-  Future<int> getCountComments(PostModel post) async {
+  Future<List<CommentsModel>?> getComments(PostModel post) async {
     try {
-      final res = await supabaseClient
-          .from('comments')
-          .select()
-          .eq('post_id', post.id)
-          .count(CountOption.exact);
-      final count = res.count;
-      return count;
+      final response = await supabaseClient.rpc(
+        'fetch_comments_with_users',
+        params: {'post_id': post.id},
+      );
+      final data = response as List<dynamic>;
+      if (data.isEmpty) {
+        return null;
+      }
+
+      final comments = data.map((com) => CommentsModel.fromMap(com)).toList();
+
+      return comments;
     } catch (e) {
       throw Exception(e.toString());
     }

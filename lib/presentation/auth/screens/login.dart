@@ -9,7 +9,6 @@ import 'package:xylo/presentation/auth/screens/widgets/custom_button.dart';
 import 'package:xylo/presentation/auth/screens/widgets/loading_button.dart';
 import 'package:xylo/presentation/auth/screens/widgets/text_form.dart';
 import 'package:xylo/presentation/navigation_bar/nav_bar.dart';
-import 'package:xylo/presentation/post/screens/lenta.dart';
 
 class Login extends StatefulWidget {
   const Login({super.key});

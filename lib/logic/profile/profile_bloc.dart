@@ -1,6 +1,5 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:xylo/domain/use_cases/get_user_data.dart';
-import 'package:xylo/domain/use_cases/get_user_posts.dart';
 import 'package:xylo/domain/use_cases/save_user_avatar.dart';
 import 'package:xylo/domain/use_cases/save_user_changes_usecase.dart';
 import 'package:xylo/domain/use_cases/user_exist_usecase.dart';
@@ -11,13 +10,11 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
   GetUserData getUserData;
   SaveUserChangesUsecase saveUserChangesUsecase;
   SaveUserAvatar saveUserAvatar;
-  GetUserPosts getUserPosts;
   UserExistUsecase userExistUsecase;
   ProfileBloc(
       {required this.saveUserAvatar,
       required this.getUserData,
       required this.userExistUsecase,
-      required this.getUserPosts,
       required this.saveUserChangesUsecase})
       : super(ProfileInitial()) {
     on<LoadUserProfile>(

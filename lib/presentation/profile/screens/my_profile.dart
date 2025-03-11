@@ -137,8 +137,13 @@ class MyProfile extends StatelessWidget {
                                 Row(
                                   children: [
                                     CircleAvatar(
-                                      backgroundImage: CachedNetworkImageProvider(
-                                          '${dotenv.env['AVATAR_URL']!}${user.avatar}'),
+                                      backgroundImage:
+                                          CachedNetworkImageProvider(
+                                        user.avatar.isNotEmpty
+                                            ? dotenv.env['AVATAR_URL']! +
+                                                user.avatar
+                                            : 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTtuphMb4mq-EcVWhMVT8FCkv5dqZGgvn_QiA&s',
+                                      ),
                                       radius: 50,
                                     ),
                                     const SizedBox(width: 20),

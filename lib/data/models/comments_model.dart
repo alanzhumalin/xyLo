@@ -7,13 +7,17 @@ class CommentsModel {
   final String postId;
   final String text;
   final DateTime createdAt;
-  CommentsModel({
-    required this.id,
-    required this.userId,
-    required this.postId,
-    required this.text,
-    required this.createdAt,
-  });
+  final String? username;
+  final String? avatar;
+
+  CommentsModel(
+      {required this.id,
+      required this.userId,
+      required this.postId,
+      required this.text,
+      required this.createdAt,
+      this.avatar,
+      this.username});
 
   Map<String, dynamic> toMap() {
     return <String, dynamic>{
@@ -32,6 +36,8 @@ class CommentsModel {
       postId: map['post_id'] as String,
       text: map['text'] as String,
       createdAt: DateTime.parse(map['created_at']),
+      username: map['username'] as String,
+      avatar: map['avatar'] as String,
     );
   }
 

@@ -3,7 +3,6 @@ import 'dart:io';
 import 'package:flutter_image_compress/flutter_image_compress.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:xylo/data/models/post_model.dart';
 import 'package:xylo/data/models/user_model.dart';
 
 class UserService {
@@ -123,25 +122,6 @@ class UserService {
           .eq('username', username)
           .maybeSingle();
       return user != null;
-    } catch (e) {
-      throw Exception(e.toString());
-    }
-  }
-
-  Future<List<PostModel>?> getUserPosts(String id) async {
-    try {
-      final posts = await supabaseClient
-          .from('posts')
-          .select()
-          .eq('user_id', id)
-          .order('created_at', ascending: false);
-
-      if (posts.isEmpty) {
-        return null;
-      }
-
-      final userPosts = posts.map((post) => PostModel.fromMap(post)).toList();
-      return userPosts;
     } catch (e) {
       throw Exception(e.toString());
     }
